@@ -10,7 +10,7 @@ on:
 
 jobs:
   robot-test:
-    runs-on: python:3.11-slim
+    runs-on: python:3.11-alpine
 
     strategy:
       matrix:
