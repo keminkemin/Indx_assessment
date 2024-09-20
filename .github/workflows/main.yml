@@ -10,7 +10,7 @@ on:
 
 jobs:
   robot-test:
-    runs-on: python:3.11-alpine
+    runs-on: ubuntu-latest
 
     strategy:
       matrix:
