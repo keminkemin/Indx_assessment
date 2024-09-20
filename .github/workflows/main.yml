@@ -1,0 +1,51 @@
+name: Robot Framework API Tests
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  robot-test:
+    runs-on: python:3.11-slim
+
+    strategy:
+      matrix:
+        python-version: [3.11]  
+
+    steps:
+      # Step 1: Checkout the repository code
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      # Step 2: Set up Python with the specified version
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      # Step 3: Set up Python virtual environment and install dependencies
+      - name: Set up Python virtual environment
+        run: |
+          python3 --version  # For debugging
+          pip3 install virtualenv
+          virtualenv venv
+          source venv/bin/activate
+          pip3 install -r requirements.txt
+
+      # Step 4: Run Robot Framework tests
+      - name: Run Robot Framework tests
+        run: |
+          source venv/bin/activate  # Activate virtual environment again
+          mkdir -p results  # Create results directory
+          robot .
+
+      # Step 7: Upload test results (optional)
+      - name: Upload Robot Framework results
+        uses: actions/upload-artifact@v2
+        with:
+          name: robot-results
+          path: results/
