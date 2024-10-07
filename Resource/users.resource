@@ -1,12 +1,11 @@
 *** Settings ***
 Resource    ./init.resource
-Library    SeleniumLibrary
 
 *** Variables ***
 ${USERID}    7111543
 
 *** Keywords ***
-User hit POST User
+create new User
     [Arguments]    ${username}    ${userEmail}    ${gender}    ${status}
     ${header}=    Create Dictionary    Authorization=Bearer ${TOKEN}
     ${body}=    Create Dictionary    name=${username}    email=${userEmail}    gender=${gender}    status=${status}
@@ -61,7 +60,7 @@ User validate POST user response message with same email
     Should Be Equal    ${postUserSame}    ${field}
     Should Be Equal    ${postUserSameMessage}    ${message}
 
-User hit POST user with no token
+create new user with no token 
     [Arguments]    ${username}    ${userEmail}    ${gender}    ${status}
     ${body}=    Create Dictionary    name=${username}    email=${userEmail}    gender=${gender}    status=${status}
     Create Session    postUser    ${BASEURL}    disable_warnings=1
@@ -79,7 +78,7 @@ User validate POST user with invalid token message
     ${postUserNoToken}=    Get From List    ${postUserNoToken}    0
     Should Be Equal    ${postUserNoToken}    ${message}
 
-User hit POST user with invalid token
+create new user with invalid token
     [Arguments]    ${username}    ${userEmail}    ${gender}    ${status}
     ${header}=    Create Dictionary    Authorization=Bearer asd123
     ${body}=    Create Dictionary    name=${username}    email=${userEmail}    gender=${gender}    status=${status}
@@ -92,49 +91,6 @@ User hit POST user with invalid token
     Set Test Variable    ${postUserStatusCode}
     Set Test Variable    ${name}
 
-User send new post by user id
-    [Arguments]    ${id}    ${title}    ${body}
-    ${header}=    Create Dictionary    Authorization=Bearer ${TOKEN}
-    ${json}=    Create Dictionary    title=${title}    body=${body}
-    Create Session    postNewPost    ${BASEURL}    headers=${header}    disable_warnings=1
-    ${postNewPost}=    POST On Session    postNewPost    /public/v2/users/${id}/posts    json=${json}    expected_status=Anything
-    ${postNewPostJson}=    Set Variable    ${postNewPost.json()}
-    ${postNewPostStatusCode}=    Convert To String    ${postNewPost.status_code}
-    IF    '${postNewPostStatusCode}' == '201'
-        ${postId}=    Get Value From Json    ${postNewPostJson}    $.id
-        ${postId}=    Get From List    ${postId}    0
-        ${postId}=    Convert To String    ${postId}
-        Set Suite Variable    ${postId}
-    END
-    Set Test Variable    ${postNewPostJson}
-    Set Test Variable    ${postNewPostStatusCode}
-
-User validate new post status code should be
-    [Arguments]    ${expectedStatusCode}
-    Should Be Equal    ${postNewPostStatusCode}    ${expectedStatusCode}
-
-User validate new post respons message should contain
-    [Arguments]    ${user}    ${title}    ${body}
-    ${newUserPostId}=    Get Value From Json    ${postNewPostJson}    $.user_id
-    ${newUserPostId}=    Get From List    ${newUserPostId}    0
-    ${newUserPostId}=    Convert To String    ${newUserPostId}
-    ${newUserPostTitle}=    Get Value From Json    ${postNewPostJson}    $.title
-    ${newUserPostTitle}=    Get From List    ${newUserPostTitle}    0
-    ${newUserPostBody}=    Get Value From Json    ${postNewPostJson}    $.body
-    ${newUserPostBody}=    Get From List    ${newUserPostBody}    0
-    Should Be Equal    ${newUserPostId}    ${user}
-    Should Be Equal    ${newUserPostTitle}    ${title}
-    Should Be Equal    ${newUserPostBody}    ${body}
-
-User validate new post with missing parameter
-    [Arguments]    ${param}    ${message}
-    ${newUserPostError}=    Get Value From Json    ${postNewPostJson}    $..field
-    ${newUserPostError}=    Get From List    ${newUserPostError}    0
-    ${newUserPostMessage}=    Get Value From Json    ${postNewPostJson}    $..message
-    ${newUserPostMessage}=    Get From List    ${newUserPostMessage}    0
-    Should Be Equal    ${newUserPostError}    ${param}
-    Should Be Equal    ${newUserPostMessage}    ${message}
-
 User send new comment by user id
     [Arguments]    ${id}
     ${header}=    Create Dictionary    Authorization=Bearer ${TOKEN}
@@ -145,3 +101,34 @@ User send new comment by user id
     ${postNewCommentStatusCode}=    Convert To String    ${postNewComment.status_code}
     Set Test Variable    ${postNewCommentJson}
     Set Test Variable    ${postNewCommentStatusCode}
+
+User GET user detail with id
+    [Arguments]    ${id}
+    ${header}=    Create Dictionary    Authorization=Bearer ${TOKEN}
+    Create Session    getUser    ${BASEURL}    disable_warnings=1    headers=${header}
+    ${getUser}=    GET On Session    getUser    /public/v2/users/${id}    expected_status=Anything
+    ${getUserJson}=    Set Variable    ${getUser.json()}
+    ${getUserStatusCode}=    Convert To String    ${getUser.status_code}
+    Set Test Variable    ${getUserJson}
+    Set Test Variable    ${getUserStatusCode}
+
+User validate GET user message
+    [Arguments]    ${gender}    ${status}    ${message}
+    IF    '${getUserStatusCode}' == '200'
+        ${getUserName}=    Get Value From Json    ${getUserJson}    $.name
+        ${getUserName}=    Get From List    ${getUserName}    0
+        ${getUserEmail}=    Get Value From Json    ${getUserJson}    $.email
+        ${getUserEmail}=    Get From List    ${getUserEmail}    0
+        ${getUserGender}=    Get Value From Json    ${getUserJson}    $.gender
+        ${getUserGender}=    Get From List    ${getUserGender}    0
+        ${getUserStatus}=    Get Value From Json    ${getUserJson}    $.status
+        ${getUserStatus}=    Get From List    ${getUserStatus}    0
+        Should Be Equal    ${getUserName}    ${name}
+        Should Be Equal    ${getUserEmail}    ${email}
+        Should Be Equal    ${getUserGender}    ${gender}
+        Should Be Equal    ${getUserStatus}    ${status}
+    ELSE
+        ${getUserMessage}=    Get Value From Json    ${getUserJson}    $.message
+        ${getUserMessage}=    Get From List    ${getUserMessage}    0
+        Should Be Equal    ${getUserMessage}    ${message}
+    END

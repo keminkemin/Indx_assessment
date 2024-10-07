@@ -19,3 +19,6 @@ Generate random name and email
     Set Test Variable    ${name}
     Set Test Variable    ${email}
 
+status code should be
+    [Arguments]    ${expectedStatusCode}
+    Status Should Be    ${expectedStatusCode}
