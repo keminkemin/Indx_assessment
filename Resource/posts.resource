@@ -1,6 +1,5 @@
 *** Settings ***
 Resource    ./init.resource
-Library    Dialogs
 
 *** Keywords ***
 User send new post by user id

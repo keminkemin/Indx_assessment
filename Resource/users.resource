@@ -1,6 +1,5 @@
 *** Settings ***
 Resource    ./init.resource
-Library    OperatingSystem
 
 *** Variables ***
 ${USERID}    7111543
