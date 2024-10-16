@@ -3,6 +3,8 @@ Library    RequestsLibrary
 Library    String
 Library    Collections
 Library    JSONLibrary
+Library    OperatingSystem
+Library    Dialogs
 Library    ./lib.py
 
 *** Variables ***
