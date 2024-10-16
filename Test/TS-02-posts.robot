@@ -12,12 +12,12 @@ User able to send new post by id
     Then User validate new post respons message should contain    ${userId}    ini judul    ini isi postnya
 
 User cannot send new post without title
-    Given User send new post by user id    ${USERID}    ${EMPTY}    ini isi postnya
+    Given User send new post by user id    ${userId}    ${EMPTY}    ini isi postnya
     When status code should be    422
     Then User validate new post with missing parameter    title    can't be blank
 
 User cannot send new post without body
-    Given User send new post by user id    ${USERID}    ini judul    ${EMPTY}
+    Given User send new post by user id    ${userId}    ini judul    ${EMPTY}
     When status code should be    422
     Then User validate new post with missing parameter    body    can't be blank
 
@@ -26,3 +26,14 @@ User cannot send new post without id
     When status code should be    422
     Then User validate new post with missing parameter    user    must exist
 
+User can get new post with id
+    Given create new User    ${name}    ${email}    male    active
+    And User send new post by user id    ${userId}    ini judul    ini isi postnya
+    When user get post details by id    ${postId}
+    Then response json should contain correct attribute
+
+User can update user details by id
+    Given create new User    ${name}    ${email}    male    active
+    When update new created user
+    And status code should be    200
+    Then validate update user response message
