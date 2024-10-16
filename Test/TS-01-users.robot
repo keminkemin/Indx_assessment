@@ -63,5 +63,15 @@ User cannot GET user detail using invalid id
     When status code should be    404
     Then User validate GET user message    male    active    Resource not found    
 
+User can delete user by id
+    Given create new User    ${name}    ${email}    male    active
+    When delete new created user
+    And status code should be    204
+    Then User GET user detail with id    ${userId}
+    And status code should be    404
 
-#I can't create the test for POST comment and todos due to lacking of documentation on the website
+User can update user details by id
+    Given create new User    ${name}    ${email}    male    active
+    When update new created user
+    And status code should be    200
+    Then validate update user response message

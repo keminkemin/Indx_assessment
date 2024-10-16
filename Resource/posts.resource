@@ -40,3 +40,17 @@ User validate new post respons message should contain
     Should Be Equal    ${newUserPostId}    ${user}
     Should Be Equal    ${newUserPostTitle}    ${title}
     Should Be Equal    ${newUserPostBody}    ${body}
+
+user get post details by id
+    [Arguments]    ${id}
+    ${header}=    Create Dictionary    Authorization=Bearer ${TOKEN}
+    Create Session    posts    ${BASEURL}    headers=${header}    disable_warnings=1
+    ${getPosts}=    GET On Session    posts    public/v2/posts/${id}    expected_status=Anything
+    ${getPostsJson}=    Set Variable    ${getPosts.json()}
+    Set Test Variable    ${getPostsJson}
+
+response json should contain correct attribute
+    Dictionary Should Contain Key    ${getPostsJson}    id
+    Dictionary Should Contain Key    ${getPostsJson}    user_id
+    Dictionary Should Contain Key    ${getPostsJson}    title
+    Dictionary Should Contain Key    ${getPostsJson}    body

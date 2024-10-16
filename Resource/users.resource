@@ -1,5 +1,6 @@
 *** Settings ***
 Resource    ./init.resource
+Library    OperatingSystem
 
 *** Variables ***
 ${USERID}    7111543
@@ -132,3 +133,30 @@ User validate GET user message
         ${getUserMessage}=    Get From List    ${getUserMessage}    0
         Should Be Equal    ${getUserMessage}    ${message}
     END
+
+delete new created user
+    ${header}=    Create Dictionary    Authorization=Bearer ${TOKEN}
+    Create session    delUser    ${BASEURL}    disable_warnings=1    headers=${header}
+    ${users}=    DELETE On Session    delUser    /public/v2/users/${userId}    expected_status=Anything        
+
+update new created user
+    ${header}=    Create Dictionary    Authorization=Bearer ${TOKEN}
+    ${body}=    Create Dictionary    name=newName    email=newEmail@mail.com    gender=female    status=active
+    Create Session    updateUser    ${BASEURL}    headers=${header}    disable_warnings=1
+    ${users}=    PUT On Session    updateUser    /public/v2/users/${userId}    json=${body}    expected_status=Anything
+    ${usersJson}=    Set Variable    ${users.json()}
+    Set Test Variable    ${usersJson}
+
+validate update user response message
+    ${updateUserName}=    Get Value From Json    ${usersJson}    $.name
+    ${updateUserName}=    Get From List    ${updateUserName}    0
+    ${updateUserEmail}=    Get Value From Json    ${usersJson}    $.email
+    ${updateUserEmail}=    Get From List    ${updateUserEmail}    0
+    ${updateUserGender}=    Get Value From Json    ${usersJson}    $.gender
+    ${updateUserGender}=    Get From List    ${updateUserGender}    0
+    ${updateUserStatus}=    Get Value From Json    ${usersJson}    $.status
+    ${updateUserStatus}=    Get From List    ${updateUserStatus}    0
+    Should Be Equal    ${updateUserName}    newName
+    Should Be Equal    ${updateUserEmail}    newEmail@mail.com
+    Should Be Equal    ${updateUserGender}    female
+    Should Be Equal    ${updateUserStatus}    active
