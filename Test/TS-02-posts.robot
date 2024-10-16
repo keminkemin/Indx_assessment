@@ -32,8 +32,10 @@ User can get new post with id
     When user get post details by id    ${postId}
     Then response json should contain correct attribute
 
-User can update user details by id
-    Given create new User    ${name}    ${email}    male    active
-    When update new created user
+User can update posts by id
+    Given create new user    ${name}    ${email}    male    active
+    And User send new post by user id    ${userId}    ini judul    ini isi postnya
+    When user update posts by id
+    Then validate posts response message
+    And response json should contain correct attribute
     And status code should be    200
-    Then validate update user response message

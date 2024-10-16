@@ -1,5 +1,6 @@
 *** Settings ***
 Resource    ./init.resource
+Library    Dialogs
 
 *** Keywords ***
 User send new post by user id
@@ -45,12 +46,28 @@ user get post details by id
     [Arguments]    ${id}
     ${header}=    Create Dictionary    Authorization=Bearer ${TOKEN}
     Create Session    posts    ${BASEURL}    headers=${header}    disable_warnings=1
-    ${getPosts}=    GET On Session    posts    public/v2/posts/${id}    expected_status=Anything
-    ${getPostsJson}=    Set Variable    ${getPosts.json()}
+    ${posts}=    GET On Session    posts    public/v2/posts/${id}    expected_status=Anything
+    ${postsJson}=    Set Variable    ${posts.json()}
     Set Test Variable    ${getPostsJson}
 
 response json should contain correct attribute
-    Dictionary Should Contain Key    ${getPostsJson}    id
-    Dictionary Should Contain Key    ${getPostsJson}    user_id
-    Dictionary Should Contain Key    ${getPostsJson}    title
-    Dictionary Should Contain Key    ${getPostsJson}    body
+    Dictionary Should Contain Key    ${postsJson}    id
+    Dictionary Should Contain Key    ${postsJson}    user_id
+    Dictionary Should Contain Key    ${postsJson}    title
+    Dictionary Should Contain Key    ${postsJson}    body
+
+user update posts by id
+    ${header}=    Create Dictionary    Authorization=Bearer ${TOKEN}
+    ${body}=    Create Dictionary    title=newTitle    body=newBody
+    Create Session    updatePosts    ${BASEURL}    headers=${header}    disable_warnings=1
+    ${posts}=    PUT On Session    updatePosts    /public/v2/posts/${postId}    json=${body}    expected_status=Anything
+    ${postsJson}=    Set Variable    ${posts.json()}
+    Set Test Variable    ${postsJson}
+
+validate posts response message
+    ${updatePostsTitle}=    Get Value From Json    ${postsJson}    $.title
+    ${updatePostsTitle}=    Get From List    ${updatePostsTitle}    0
+    ${updatePostsBody}=    Get Value From Json    ${postsJson}    $.body
+    ${updatePostsBody}=    Get From List    ${updatePostsBody}    0
+    Should Be Equal    ${updatePostsTitle}    newTitle
+    Should Be Equal    ${updatePostsBody}    newBody
