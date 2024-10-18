@@ -29,3 +29,10 @@ User get comment list by post id
     And user add comment    ${postId}    nama    mail@mail.com
     When user get comment list   ${postId}
     Then status code should be    200
+
+User update comment by id
+    Given create new User    ${name}    ${email}    male    active
+    And User send new post by user id    ${userId}    ini judul    ini body
+    And user add comment    ${postId}    nama    mail@mail.com
+    When user update comment    newName    mail@mail.com
+    Then status code should be    200

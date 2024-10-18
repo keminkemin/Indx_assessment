@@ -5,6 +5,7 @@ Test Setup    Run Keywords    Generate random name and email
 
 *** Test Cases ***
 User create new single user
+    [Tags] 
     Given create new user    ${name}    ${email}    male    active    #${name}, ${email}, male and active are Arguments for the parameter on request JSON. ${name} and ${email} we got from suite setup
     When status code should be    201    #201 is status code that we expected from this API hit
     Then User validate POST user response message    male    active    #we used same parameter to validate the API returns same as requested
@@ -72,6 +73,7 @@ User can delete user by id
 
 User can update user details by id
     Given create new User    ${name}    ${email}    male    active
-    When update new created user
+    And Generate new random name and email
+    When update new created user    ${newName}    ${newEmail}
     And status code should be    200
     Then validate update user response message

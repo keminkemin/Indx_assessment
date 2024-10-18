@@ -139,8 +139,9 @@ delete new created user
     ${users}=    DELETE On Session    delUser    /public/v2/users/${userId}    expected_status=Anything        
 
 update new created user
+    [Arguments]    ${username}    ${userEmail}
     ${header}=    Create Dictionary    Authorization=Bearer ${TOKEN}
-    ${body}=    Create Dictionary    name=newName    email=newEmail@mail.com    gender=female    status=active
+    ${body}=    Create Dictionary    name=${username}    email=${userEmail}    gender=female    status=active
     Create Session    updateUser    ${BASEURL}    headers=${header}    disable_warnings=1
     ${users}=    PUT On Session    updateUser    /public/v2/users/${userId}    json=${body}    expected_status=Anything
     ${usersJson}=    Set Variable    ${users.json()}
@@ -155,7 +156,7 @@ validate update user response message
     ${updateUserGender}=    Get From List    ${updateUserGender}    0
     ${updateUserStatus}=    Get Value From Json    ${usersJson}    $.status
     ${updateUserStatus}=    Get From List    ${updateUserStatus}    0
-    Should Be Equal    ${updateUserName}    newName
-    Should Be Equal    ${updateUserEmail}    newEmail@mail.com
+    Should Be Equal    ${updateUserName}    ${newName}
+    Should Be Equal    ${updateUserEmail}    ${newEmail}
     Should Be Equal    ${updateUserGender}    female
     Should Be Equal    ${updateUserStatus}    active
