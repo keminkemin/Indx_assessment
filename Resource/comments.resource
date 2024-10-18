@@ -36,3 +36,12 @@ user get comment list
     ${comments}=    GET On Session    comments    /public/v2/posts/${id}/comments   expected_status=Anything
     ${commentsJson}=    Set Variable    ${comments.json()}
     Set Test Variable    ${commentsJson}
+
+user update comment
+    [Arguments]    ${name}    ${email}
+    ${header}=    Create Dictionary    Authorization=Bearer ${TOKEN}
+    ${body}=    Create Dictionary    name=${name}    email=${email}    body=update komen
+    Create session    comments    ${BASEURL}    headers=${header}    disable_warnings=1
+    ${comments}=    PUT On Session    comments    /public/v2/comments/${commentId}    json=${body}    expected_status=Anything
+    ${commentsJson}=    Set Variable    ${comments.json()}
+    Set Test Variable    ${commentsJson}

@@ -47,7 +47,7 @@ user get post details by id
     Create Session    posts    ${BASEURL}    headers=${header}    disable_warnings=1
     ${posts}=    GET On Session    posts    public/v2/posts/${id}    expected_status=Anything
     ${postsJson}=    Set Variable    ${posts.json()}
-    Set Test Variable    ${getPostsJson}
+    Set Test Variable    ${postsJson}
 
 response json should contain correct attribute
     Dictionary Should Contain Key    ${postsJson}    id

@@ -1,9 +1,9 @@
 *** Settings ***
-Library    RequestsLibrary
 Library    String
 Library    Collections
 Library    JSONLibrary
 Library    OperatingSystem
+Library    RequestsLibrary
 Library    Dialogs
 Library    ./lib.py
 
@@ -24,3 +24,10 @@ Generate random name and email
 status code should be
     [Arguments]    ${expectedStatusCode}
     Status Should Be    ${expectedStatusCode}
+
+Generate new random name and email
+    ${randomChar}=    randNum
+    ${newName}=    Convert To String    TestAuto-${randomChar}
+    ${newEmail}=    Convert to String    ${newName}@mailcom
+    Set Test Variable    ${newName}
+    Set Test Variable    ${newEmail}
