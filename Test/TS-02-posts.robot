@@ -39,3 +39,9 @@ User can update posts by id
     Then validate posts response message
     And response json should contain correct attribute
     And status code should be    200
+
+User cannot send post without valid token
+    Given create new User    ${name}    ${email}    male    active
+    When send new post by user id without token    ${userId}    ini judul    ini isi postnya
+    Then status code should be    401
+    And validate failed posts response    message    Authentication failed

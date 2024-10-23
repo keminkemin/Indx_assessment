@@ -45,3 +45,19 @@ user update comment
     ${comments}=    PUT On Session    comments    /public/v2/comments/${commentId}    json=${body}    expected_status=Anything
     ${commentsJson}=    Set Variable    ${comments.json()}
     Set Test Variable    ${commentsJson}
+
+validate failed comments response
+    [Arguments]    ${key}    ${value}
+    ${responseList}=    Run Keyword And Return Status    Dictionary Should Contain Item    ${commentsJson[0]}    ${key}    ${value}
+    IF    ${responseList} == False
+        Dictionary Should Contain Item    ${commentsJson}    ${key}    ${value}
+    END
+
+user add comment with invalid auth
+    [Arguments]    ${id}    ${name}    ${email}
+    ${header}=    Create Dictionary    Authorization=Bearer ${INVALIDTOKEN}
+    ${body}=    Create Dictionary    name=${name}    email=${email}    body=ini komen
+    Create session    comments    ${BASEURL}    headers=${header}    disable_warnings=1
+    ${comments}=    POST On Session    comments    /public/v2/posts/${id}/comments    json=${body}    expected_status=Anything
+    ${commentsJson}=    Set Variable    ${comments.json()}
+    Set Test Variable    ${commentsJson}
