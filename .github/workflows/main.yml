@@ -10,7 +10,7 @@ on:
 
 jobs:
   robot-test:
-    runs-on: python:3.11-slim
+    runs-on: ubuntu
 
     strategy:
       matrix:
@@ -45,7 +45,7 @@ jobs:
 
       # Step 7: Upload test results (optional)
       - name: Upload Robot Framework results
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
           name: robot-results
           path: results/
